@@ -56,10 +56,6 @@ sudo yum update -y
 sudo yum install jq -y
 sudo yum install -y git
 
-git=$(git --version)
-jq=$(jq --version)
-wget=$(wget --version)
-tar=$(tar --version)
 
 if [[ -z $git ]] || [ -z $jq ]] || [ -z $wget ]] || [ -z $tar ]]; then
 	echo "install dependencies"
