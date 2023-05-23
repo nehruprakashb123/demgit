@@ -1,0 +1,26 @@
+apiVersin: apps/v1
+kind: Deployment
+metadata: 
+  name: ms-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ms-1
+  template:
+    metadata:
+      labels:
+        app: ms-1 
+  spec:
+    containers:
+    - name: ms-1
+      image: acr/ms-1:300
+      ports:
+      - containerPort: 80
+      env:
+      - name: API_PORT
+        vaule: "3000"
+      - name: LOG_LEVEL
+        vaule: info
+      - name: RUN_ENV
+        value: Production

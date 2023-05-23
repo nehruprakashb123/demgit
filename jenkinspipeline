@@ -1,0 +1,41 @@
+pipeline{
+    agent any
+    tools{
+        maven 'maven3.8.4'
+    }
+    environment{
+        DOCKERRUN = 'docker run -d -p 8080:8080 --name myapp kubeprakash/myapp:1.1.0'
+    }
+    stages{
+        stage('SCM Checkout'){
+            steps{
+                git credentialsId: 'GithubCred', url: 'https://github.com/nehruprakashb123/my-app.git'
+            }
+        }
+        stage('Maven Build'){
+            steps{
+                sh "mvn clean package"
+            }
+        }
+        stage('Docker Build Image'){
+            steps{
+                sh "docker build -t kubeprakash/myapp:1.1.0 ."
+            }
+        }
+        stage('Upload to DockerHub'){
+            steps{
+                withCredentials([string(credentialsId: 'kubeprakash', variable: 'dockerpwd')]){
+                sh "docker login -u kubeprakash -p ${dockerpwd}"
+                }
+                sh "docker push kubeprakash/myapp:1.1.0"
+            }
+        }
+        stage('Deploy in DockerServer'){
+            steps{
+                sshagent(['dockerserver']){
+                    sh "ssh -o StrictHostKeyChecking=no ubuntu@18.117.71.11 ${DOCKERRUN}"
+                }
+            }
+        }
+    }
+}
